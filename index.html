@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>B-Goal AI</title>
+  <style>
+    :root {
+      --bg: #eef5ed;
+      --panel: #ffffff;
+      --text: #142016;
+      --muted: #506153;
+      --accent: #1d7d3b;
+      --accent-2: #35a8ff;
+      --line: #d9e3d7;
+    }
+
+    [data-theme="Night"] {
+      --bg: #11161d;
+      --panel: #1c2430;
+      --text: #eef4f2;
+      --muted: #aebbc0;
+      --accent: #35a8ff;
+      --accent-2: #62d2ff;
+      --line: #34404d;
+    }
+
+    [data-theme="Gold"] {
+      --bg: #f6f2e8;
+      --panel: #ffffff;
+      --text: #251f16;
+      --muted: #6d604c;
+      --accent: #b98218;
+      --accent-2: #2a8bd8;
+      --line: #e1d6bd;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    .app {
+      min-height: 100vh;
+      background-image: linear-gradient(90deg, var(--bg) 0%, rgba(255,255,255,0.68) 55%, rgba(255,255,255,0.2)), url("assets/bgoal_app_background.png");
+      background-size: cover;
+      background-position: center;
+      padding: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      max-width: 1200px;
+      margin: 0 auto 14px;
+    }
+
+    .logo {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .theme {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--panel);
+      color: var(--text);
+      font: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 14px;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 14px;
+    }
+
+    nav {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      align-self: start;
+    }
+
+    .tab {
+      display: block;
+      width: 100%;
+      margin: 4px 0;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      border: 1px solid transparent;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    h2, h3 {
+      margin: 0 0 12px;
+    }
+
+    .muted { color: var(--muted); }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 100px 1fr 42px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .bar {
+      height: 12px;
+      background: color-mix(in srgb, var(--line), transparent 15%);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: 50%;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 7px 10px;
+      background: color-mix(in srgb, var(--panel), var(--accent) 8%);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .advice, .plan {
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+
+    video {
+      width: 100%;
+      max-height: 460px;
+      background: #11161d;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+
+    @media (max-width: 800px) {
+      .shell { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      header { align-items: flex-start; }
+      .theme { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <img class="logo" src="assets/bgoal_world_ball_logo.png" alt="B-Goal logo">
+      <div>
+        <h1>B-Goal AI</h1>
+        <div class="subtitle">Be Good On All Learning</div>
+      </div>
+      <div class="theme">
+        <label for="theme">Theme</label>
+        <select id="theme">
+          <option>Pitch</option>
+          <option>Night</option>
+          <option>Gold</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="shell">
+      <nav>
+        <button class="tab active" data-view="dashboard">Dashboard</button>
+        <button class="tab" data-view="training">Training</button>
+        <button class="tab" data-view="plan">7-Day Plan</button>
+        <button class="tab" data-view="camera">Camera</button>
+        <button class="tab" data-view="settings">Settings</button>
+      </nav>
+
+      <main>
+        <section id="dashboard" class="view active">
+          <div class="grid">
+            <div class="panel">
+              <h2>Player Card</h2>
+              <p id="playerCard" class="muted"></p>
+            </div>
+            <div class="panel">
+              <h2>Level</h2>
+              <p id="levelText"></p>
+              <div class="bar"><div id="levelFill" class="fill"></div></div>
+              <p id="sessionText" class="muted"></p>
+            </div>
+            <div class="panel">
+              <h2>Ratings</h2>
+              <div id="ratings"></div>
+            </div>
+            <div class="panel">
+              <h2>Badges</h2>
+              <div id="badges" class="badges"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="training" class="view">
+          <div class="panel">
+            <h2>Training Coach</h2>
+            <textarea id="trainingNote" placeholder="What did you train today?"></textarea>
+            <div class="actions">
+              <button id="coachBtn">Coach Me</button>
+              <button class="secondary" id="speakBtn">Speak Advice</button>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:14px">
+            <h3>B-Goal Coach</h3>
+            <div id="advice" class="advice muted">Your advice will appear here.</div>
+          </div>
+        </section>
+
+        <section id="plan" class="view">
+          <div class="panel">
+            <h2>7-Day Training Plan</h2>
+            <button id="planBtn">Generate Plan</button>
+            <div id="planOutput" class="plan muted" style="margin-top:14px"></div>
+          </div>
+        </section>
+
+        <section id="camera" class="view">
+          <div class="panel">
+            <h2>Camera And Recorder</h2>
+            <p class="muted">The browser may ask for camera permission.</p>
+            <video id="video" autoplay muted playsinline></video>
+            <div class="actions">
+              <button id="startCam">Start Camera</button>
+              <button class="secondary" id="snapBtn">Snapshot</button>
+              <button class="secondary" id="recordBtn">Start Recording</button>
+              <button class="secondary" id="stopCam">Stop Camera</button>
+            </div>
+            <p id="cameraStatus" class="muted">Camera stopped.</p>
+          </div>
+        </section>
+
+        <section id="settings" class="view">
+          <div class="panel">
+            <h2>Profile</h2>
+            <div class="field"><label>Name</label><input id="name"></div>
+            <div class="field"><label>Position</label><input id="position" placeholder="striker, midfielder, defender, goalkeeper"></div>
+            <div class="field"><label>Play style</label><input id="style"></div>
+            <div class="field"><label>Football goal</label><input id="goal"></div>
+            <button id="saveProfile">Save Profile</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const defaultPlayer = {
+      name: "",
+      position: "",
+      style: "",
+      goal: "",
+      trainingSessions: 0,
+      xp: 0,
+      badges: [],
+      theme: "Pitch",
+      ratings: { Shooting: 50, Passing: 50, Dribbling: 50, Defending: 50, Speed: 50 },
+      history: []
+    };
+
+    const levels = [
+      [1, "Academy", 0],
+      [2, "Prospect", 100],
+      [3, "First Team", 250],
+      [4, "Star Player", 500],
+      [5, "B-Goal Legend", 900]
+    ];
+
+    let player = { ...defaultPlayer, ...(JSON.parse(localStorage.getItem("bgoalPlayer") || "{}")) };
+    player.ratings = { ...defaultPlayer.ratings, ...(player.ratings || {}) };
+    player.badges = player.badges || [];
+    player.history = player.history || [];
+
+    let stream = null;
+    let recorder = null;
+    let chunks = [];
+
+    function save() {
+      localStorage.setItem("bgoalPlayer", JSON.stringify(player));
+    }
+
+    function levelInfo() {
+      let current = levels[0], next = null;
+      levels.forEach((level, index) => {
+        if (player.xp >= level[2]) {
+          current = level;
+          next = levels[index + 1] || null;
+        }
+      });
+      const progress = next ? Math.round(((player.xp - current[2]) / (next[2] - current[2])) * 100) : 100;
+      const needed = next ? next[2] - player.xp : 0;
+      return { current, progress, needed };
+    }
+
+    function awardBadges() {
+      const earned = [
+        ["First Session", player.trainingSessions >= 1],
+        ["Training Streak", player.trainingSessions >= 5],
+        ["Finisher", player.ratings.Shooting >= 60],
+        ["Playmaker", player.ratings.Passing >= 60],
+        ["Skill Star", player.ratings.Dribbling >= 60],
+        ["Defensive Wall", player.ratings.Defending >= 60],
+        ["Speed Boost", player.ratings.Speed >= 60],
+        ["B-Goal Grinder", player.xp >= 250]
+      ];
+      earned.forEach(([badge, ok]) => {
+        if (ok && !player.badges.includes(badge)) player.badges.push(badge);
+      });
+    }
+
+    function refresh() {
+      document.body.dataset.theme = player.theme || "Pitch";
+      document.getElementById("theme").value = player.theme || "Pitch";
+      document.getElementById("playerCard").textContent =
+        `Name: ${player.name || "New player"}\nPosition: ${player.position || "Not set"}\nStyle: ${player.style || "Not set"}\nGoal: ${player.goal || "Not set"}`;
+      const level = levelInfo();
+      document.getElementById("levelText").textContent =
+        `Level ${level.current[0]} - ${level.current[1]} | ${player.xp} XP | ${level.needed} XP to next`;
+      document.getElementById("levelFill").style.width = `${level.progress}%`;
+      document.getElementById("sessionText").textContent = `Training sessions completed: ${player.trainingSessions}`;
+      document.getElementById("ratings").innerHTML = Object.entries(player.ratings).map(([skill, value]) => `
+        <div class="bar-row"><strong>${skill}</strong><div class="bar"><div class="fill" style="width:${value}%"></div></div><span>${value}</span></div>
+      `).join("");
+      document.getElementById("badges").innerHTML = player.badges.length
+        ? player.badges.map(badge => `<span class="badge">${badge}</span>`).join("")
+        : `<span class="muted">No badges yet. Train to unlock your first one.</span>`;
+      ["name", "position", "style", "goal"].forEach(id => document.getElementById(id).value = player[id] || "");
+    }
+
+    function advice(note) {
+      const pos = (player.position || "").toLowerCase();
+      let focus = "speed, dribbling, passing, defending, and shooting";
+      if (pos === "striker") focus = "finishing, movement, first touch, and shooting under pressure";
+      if (pos === "midfielder") focus = "passing, scanning, vision, and controlling the tempo";
+      if (pos === "defender") focus = "positioning, tackling timing, marking, and calm clearances";
+      if (pos === "goalkeeper") focus = "handling, footwork, shot stopping, and communication";
+      return `Today, focus on ${focus}.\n\n${note ? `You wrote: "${note}"\nConnect that to your main goal: ${player.goal || "keep improving"}.` : "Track one thing you improved before you finish."}`;
+    }
+
+    function improveRatings() {
+      const pos = (player.position || "").toLowerCase();
+      const boosts = pos === "striker" ? { Shooting: 2, Speed: 1 }
+        : pos === "midfielder" ? { Passing: 2, Dribbling: 1 }
+        : pos === "defender" ? { Defending: 2, Passing: 1 }
+        : pos === "goalkeeper" ? { Defending: 2, Passing: 1 }
+        : { Dribbling: 1, Speed: 1 };
+      Object.entries(boosts).forEach(([skill, boost]) => {
+        player.ratings[skill] = Math.min(100, player.ratings[skill] + boost);
+      });
+    }
+
+    function trainingPlan() {
+      const pos = (player.position || "").toLowerCase();
+      const plans = {
+        striker: ["Finishing: 50 clean shots.", "Movement: near-post and back-post runs.", "First touch: receive, turn, shoot.", "Speed: 8 short sprints.", "Weak foot: 30 passes and 20 shots.", "1v1: beat a player then finish.", `Review your goal: ${player.goal || "score more goals"}.`],
+        midfielder: ["Passing: 100 wall passes.", "Scanning: check shoulder before every touch.", "Dribbling: tight cone turns.", "Fitness: 6 shuttle runs.", "Long passing: 30 driven passes.", "Control: receive under pressure.", `Review your goal: ${player.goal || "control games"}.`],
+        defender: ["Positioning: block the inside lane.", "Tackling: time clean standing tackles.", "Headers: 20 clearances.", "Speed: recovery runs.", "Passing: play out from the back.", "1v1 defending: delay, angle, win it.", `Review your goal: ${player.goal || "defend better"}.`],
+        goalkeeper: ["Handling: catch and secure 50 shots.", "Footwork across the goal line.", "Distribution: throws and passes.", "Low saves both sides.", "Communication calls.", "Reaction saves.", `Review your goal: ${player.goal || "make more saves"}.`]
+      };
+      const plan = plans[pos] || ["Ball mastery for 15 minutes.", "100 accurate passes.", "40 focused finishes.", "Sprint technique.", "Jockey and block lanes.", "Weak foot work.", `Review your goal: ${player.goal || "improve all round"}.`];
+      return plan.map((task, i) => `Day ${i + 1}\n${task}`).join("\n\n");
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab,.view").forEach(el => el.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.view).classList.add("active");
+      });
+    });
+
+    document.getElementById("theme").addEventListener("change", event => {
+      player.theme = event.target.value;
+      save();
+      refresh();
+    });
+
+    document.getElementById("saveProfile").addEventListener("click", () => {
+      ["name", "position", "style", "goal"].forEach(id => player[id] = document.getElementById(id).value.trim());
+      save();
+      refresh();
+      alert("Profile saved.");
+    });
+
+    document.getElementById("coachBtn").addEventListener("click", () => {
+      const note = document.getElementById("trainingNote").value.trim();
+      player.trainingSessions += 1;
+      player.xp += 25;
+      player.history.push({ date: new Date().toLocaleString(), note });
+      improveRatings();
+      awardBadges();
+      save();
+      refresh();
+      document.getElementById("advice").textContent = advice(note);
+    });
+
+    document.getElementById("speakBtn").addEventListener("click", () => {
+      const text = document.getElementById("advice").textContent;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    });
+
+    document.getElementById("planBtn").addEventListener("click", () => {
+      document.getElementById("planOutput").textContent = trainingPlan();
+    });
+
+    document.getElementById("startCam").addEventListener("click", async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        document.getElementById("video").srcObject = stream;
+        document.getElementById("cameraStatus").textContent = "Camera live.";
+      } catch (error) {
+        document.getElementById("cameraStatus").textContent = `Camera failed: ${error.message}`;
+      }
+    });
+
+    document.getElementById("snapBtn").addEventListener("click", () => {
+      const video = document.getElementById("video");
+      if (!stream) return alert("Start the camera first.");
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      const link = document.createElement("a");
+      link.download = "bgoal-snapshot.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+
+    document.getElementById("recordBtn").addEventListener("click", () => {
+      if (!stream) return alert("Start the camera first.");
+      if (recorder && recorder.state === "recording") {
+        recorder.stop();
+        document.getElementById("recordBtn").textContent = "Start Recording";
+        return;
+      }
+      chunks = [];
+      recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = event => chunks.push(event.data);
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: "video/webm" });
+        const link = document.createElement("a");
+        link.download = "bgoal-training.webm";
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      };
+      recorder.start();
+      document.getElementById("recordBtn").textContent = "Stop Recording";
+      document.getElementById("cameraStatus").textContent = "Recording.";
+    });
+
+    document.getElementById("stopCam").addEventListener("click", () => {
+      if (recorder && recorder.state === "recording") recorder.stop();
+      if (stream) stream.getTracks().forEach(track => track.stop());
+      stream = null;
+      document.getElementById("video").srcObject = null;
+      document.getElementById("recordBtn").textContent = "Start Recording";
+      document.getElementById("cameraStatus").textContent = "Camera stopped.";
+    });
+
+    refresh();
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+    "name": "james",
+    "position": "stricker",
+    "style": "fast",
+    "goal": "a few",
+    "training_sessions": 7,
+    "ratings": {
+        "Shooting": 50,
+        "Passing": 50,
+        "Dribbling": 57,
+        "Defending": 50,
+        "Speed": 57
+    }
+}
