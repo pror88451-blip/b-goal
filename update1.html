@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,41 +11,111 @@
 
 body {
     margin:0;
+    min-height:100vh;
     font-family:Arial, sans-serif;
-    background:#050505;
-    color:white;
     text-align:center;
-    transition:0.3s;
+    color:white;
+    background:#050505;
+    transition:0.5s;
 }
+
+
+/* APP TITLE */
 
 header {
-    font-size:32px;
+    font-size:35px;
     font-weight:bold;
-    padding:20px;
+    padding:25px;
 }
 
+
+/* CARDS */
+
 .card {
-    background:#111;
+    background:rgba(20,20,20,0.85);
     margin:15px;
     padding:20px;
-    border-radius:20px;
+    border-radius:25px;
+    box-shadow:0 0 15px rgba(0,0,0,0.3);
 }
+
 
 button {
     padding:12px 18px;
     margin:5px;
+    border-radius:15px;
     border:none;
-    border-radius:12px;
     cursor:pointer;
     font-size:16px;
 }
 
+
 input {
     padding:10px;
+    margin:5px;
     border-radius:10px;
     border:none;
-    margin:5px;
 }
+
+
+
+/* 🌱 PITCH THEME */
+
+.pitch {
+    background:linear-gradient(
+        90deg,
+        #004d18,
+        #00a63c
+    );
+}
+
+
+
+/* 🌙 NIGHT THEME */
+
+.night {
+    background:linear-gradient(
+        90deg,
+        #020204,
+        #101522,
+        #263044
+    );
+}
+
+
+
+/* ☀️ DAY THEME */
+
+.day {
+    background:linear-gradient(
+        90deg,
+        #fffde7,
+        #ffffff
+    );
+    color:black;
+}
+
+
+
+/* 🟡 GOLD THEME */
+
+.gold {
+    background:linear-gradient(
+        90deg,
+        #6b4f00,
+        #ffd700
+    );
+    color:white;
+}
+
+
+
+/* CUSTOM */
+
+.custom {
+    color:white;
+}
+
 
 
 .progress {
@@ -56,31 +127,12 @@ input {
     overflow:hidden;
 }
 
+
 .progress-bar {
     height:100%;
     width:0%;
     background:#00ff55;
     transition:0.5s;
-}
-
-
-/* Themes */
-
-.pitch {
-    background:#075e24;
-}
-
-.dark {
-    background:#050505;
-}
-
-.light {
-    background:white;
-    color:black;
-}
-
-.gold {
-    background:#806000;
 }
 
 
@@ -97,39 +149,28 @@ input {
 </header>
 
 
-<div class="card">
-
-<h2>🎯 Current Goal</h2>
-
-<p id="goal">
-No goal selected
-</p>
-
-<button onclick="newGoal()">
-New Goal
-</button>
-
-</div>
-
-
 
 <div class="card">
 
 <h2>🎨 Themes</h2>
 
-<button onclick="theme('pitch')">
+
+<button onclick="setTheme('pitch')">
 🟢 Pitch
 </button>
 
-<button onclick="theme('dark')">
-⚫ Dark
+
+<button onclick="setTheme('night')">
+🌙 Night
 </button>
 
-<button onclick="theme('light')">
-⚪ Light
+
+<button onclick="setTheme('day')">
+☀️ Day
 </button>
 
-<button onclick="theme('gold')">
+
+<button onclick="setTheme('gold')">
 🟡 Gold
 </button>
 
@@ -138,35 +179,36 @@ New Goal
 
 
 
+
 <div class="card">
 
 <h2>🎨 Custom Colour</h2>
 
 
-<input type="color" id="picker">
+<input type="color" id="colourPicker">
 
 
 <br>
 
 
 <input 
-id="colourText"
-placeholder="Type colour e.g Baby Blue">
+id="colourName"
+placeholder="Blue, Baby Blue, Red...">
 
 
 <br>
 
 
 <input 
-id="hex"
+id="hexColour"
 placeholder="#008CFF">
 
 
 <br>
 
 
-<button onclick="customColour()">
-Apply Colour
+<button onclick="applyCustom()">
+Apply Custom
 </button>
 
 
@@ -174,45 +216,34 @@ Apply Colour
 
 
 
+
 <div class="card">
 
-<h2>🎙️ AI Voice</h2>
+<h2>🎯 Current Goal</h2>
 
 
-<button onclick="voice('Boy')">
-👦 Boy
-</button>
-
-
-<button onclick="voice('Girl')">
-👧 Girl
-</button>
-
-
-<button onclick="voice('Robot')">
-🤖 Robot
-</button>
-
-
-<p id="voice">
-Voice: Not selected
+<p id="goal">
+No goal set
 </p>
 
 
-</div> 
+<button onclick="newGoal()">
+➕ Add Goal
+</button>
+
+
+</div>
 <div class="card">
 
 <h2>🗓️ 7 Day Plan</h2>
 
-<p>
-Every 12 hours = 1 checkpoint
-</p>
+<p>Every 12 hours = 1 checkpoint</p>
 
 <div class="progress">
-<div class="progress-bar" id="bar"></div>
+<div class="progress-bar" id="progressBar"></div>
 </div>
 
-<p id="progressText">
+<p id="checkpointText">
 0 / 14 checkpoints complete
 </p>
 
@@ -220,7 +251,6 @@ Every 12 hours = 1 checkpoint
 <button onclick="completeCheckpoint()">
 ✅ Complete Checkpoint
 </button>
-
 
 </div>
 
@@ -234,6 +264,33 @@ Every 12 hours = 1 checkpoint
 XP: 0
 </p>
 
+</div>
+
+
+
+<div class="card">
+
+<h2>🎙️ Voice</h2>
+
+
+<button onclick="setVoice('Boy')">
+👦 Boy
+</button>
+
+
+<button onclick="setVoice('Girl')">
+👧 Girl
+</button>
+
+
+<button onclick="setVoice('Robot')">
+🤖 Robot
+</button>
+
+
+<p id="voiceText">
+Voice: None
+</p>
 
 </div>
 
@@ -244,14 +301,13 @@ XP: 0
 <h2>🧠 B Goals Smart Assistant</h2>
 
 <p id="aiText">
-Welcome to B Goals! Set a goal and start improving.
+Welcome to B Goals! Let's improve together 🚀
 </p>
 
 
-<button onclick="smartMessage()">
+<button onclick="smartAdvice()">
 Get Advice
 </button>
-
 
 </div>
 
@@ -259,18 +315,17 @@ Get Advice
 
 <div class="card">
 
-<h2>🏆 Update 1 Features</h2>
+<h2>🏆 Update 1</h2>
 
 <p>
-✅ Smarter responses<br>
-✅ Longer answers<br>
-✅ Theme system<br>
+✅ New themes<br>
 ✅ Custom colours<br>
+✅ Goal saving<br>
+✅ XP system<br>
+✅ 7 day plans<br>
 ✅ Voice choices<br>
-✅ 14 checkpoint plans<br>
-✅ XP system
+✅ Smart assistant
 </p>
-
 
 </div>
 
@@ -279,33 +334,32 @@ Get Advice
 <script>
 
 
-let xp = localStorage.getItem("xp") || 0;
-
-let checkpoints = localStorage.getItem("checkpoints") || 0;
-
-
-document.getElementById("xp").innerHTML =
-"XP: " + xp;
+let xp =
+Number(localStorage.getItem("xp")) || 0;
 
 
-updateProgress();
+let checkpoints =
+Number(localStorage.getItem("checkpoints")) || 0;
 
 
 
-function theme(name){
+// THEME SYSTEM
 
-document.body.className = name;
+function setTheme(theme){
+
+document.body.className = theme;
 
 localStorage.setItem(
 "theme",
-name
+theme
 );
 
 }
 
 
 
-let savedTheme = localStorage.getItem("theme");
+let savedTheme =
+localStorage.getItem("theme");
 
 if(savedTheme){
 
@@ -315,21 +369,23 @@ document.body.className = savedTheme;
 
 
 
+// CUSTOM COLOUR
 
-function customColour(){
+function applyCustom(){
+
 
 let colour =
-document.getElementById("picker").value;
+document.getElementById("colourPicker").value;
 
 
-let text =
-document.getElementById("colourText")
+let name =
+document.getElementById("colourName")
 .value
 .toLowerCase();
 
 
 let hex =
-document.getElementById("hex")
+document.getElementById("hexColour")
 .value;
 
 
@@ -337,17 +393,15 @@ document.getElementById("hex")
 let colours = {
 
 "red":"#ff0000",
-"orange":"#ff9900",
-"yellow":"#ffff00",
-"green":"#00ff00",
 "blue":"#008cff",
 "baby blue":"#89cff0",
+"green":"#00ff00",
+"yellow":"#ffff00",
 "purple":"#800080",
 "pink":"#ff69b4",
+"gold":"#ffd700",
 "black":"#000000",
-"white":"#ffffff",
-"grey":"#808080",
-"gold":"#ffd700"
+"white":"#ffffff"
 
 };
 
@@ -359,14 +413,16 @@ colour = hex;
 
 }
 
-else if(colours[text]){
+else if(colours[name]){
 
-colour = colours[text];
+colour = colours[name];
 
 }
 
 
-document.body.style.background = colour;
+
+document.body.style.background =
+colour;
 
 
 localStorage.setItem(
@@ -378,23 +434,127 @@ colour
 }
 
 
-
-let savedColour =
-localStorage.getItem("customColour");
-
-
 if(savedColour){
 
-document.body.style.background =
-savedColour;
+document.body.style.background = savedColour;
+document.body.className = "custom";
 
 }
 
 
 
-function voice(type){
 
-document.getElementById("voice")
+// GOALS
+
+function newGoal(){
+
+let goal =
+prompt("Enter your goal");
+
+
+if(goal){
+
+document.getElementById("goal")
+.innerHTML =
+goal;
+
+
+localStorage.setItem(
+"goal",
+goal
+);
+
+}
+
+}
+
+
+
+let savedGoal =
+localStorage.getItem("goal");
+
+
+if(savedGoal){
+
+document.getElementById("goal")
+.innerHTML =
+savedGoal;
+
+}
+
+
+
+
+// XP + CHECKPOINTS
+
+function completeCheckpoint(){
+
+
+if(checkpoints < 14){
+
+checkpoints++;
+
+xp += 10;
+
+
+localStorage.setItem(
+"checkpoints",
+checkpoints
+);
+
+
+localStorage.setItem(
+"xp",
+xp
+);
+
+
+}
+
+
+updateProgress();
+
+}
+
+
+
+function updateProgress(){
+
+
+let percent =
+(checkpoints / 14) * 100;
+
+
+document.getElementById("progressBar")
+.style.width =
+percent + "%";
+
+
+document.getElementById("checkpointText")
+.innerHTML =
+checkpoints +
+" / 14 checkpoints complete";
+
+
+document.getElementById("xp")
+.innerHTML =
+"XP: " + xp;
+
+
+}
+
+
+updateProgress();
+
+
+
+
+// VOICE
+
+function setVoice(type){
+
+
+document.getElementById("voiceText")
 .innerHTML =
 "Voice: " + type;
 
@@ -415,7 +575,7 @@ localStorage.getItem("voice");
 
 if(savedVoice){
 
-document.getElementById("voice")
+document.getElementById("voiceText")
 .innerHTML =
 "Voice: " + savedVoice;
 
@@ -423,251 +583,37 @@ document.getElementById("voice")
 
 
 
-function completeCheckpoint(){
+
+// SMART ASSISTANT
+
+function smartAdvice(){
 
 
-if(checkpoints < 14){
+let advice = [
 
-checkpoints++;
+"Keep working towards your goal 🚀",
 
-xp = Number(xp) + 10;
+"Every checkpoint makes you stronger ⭐",
 
+"Small improvements become big achievements 🏆",
 
-localStorage.setItem(
-"checkpoints",
-checkpoints
-);
-
-
-localStorage.setItem(
-"xp",
-xp
-);
-
-
-}
-
-
-document.getElementById("xp")
-.innerHTML =
-"XP: " + xp;
-
-
-updateProgress();
-
-
-}
-
-
-
-function updateProgress(){
-
-
-let percent =
-(checkpoints / 14) * 100;
-
-
-document.getElementById("bar")
-.style.width =
-percent + "%";
-
-
-document.getElementById("progressText")
-.innerHTML =
-checkpoints +
-" / 14 checkpoints complete";
-
-
-}
-
-
-
-function newGoal(){
-
-let goal =
-prompt("What is your new goal?");
-
-
-if(goal){
-
-document.getElementById("goal")
-.innerHTML =
-goal;
-
-
-localStorage.setItem(
-"goal",
-goal
-);
-
-}
-
-
-}
-
-
-
-let savedGoal =
-localStorage.getItem("goal");
-
-
-if(savedGoal){
-
-document.getElementById("goal")
-.innerHTML =
-savedGoal;
-
-}
-
-
-
-function smartMessage(){
-
-let messages = [
-
-"Keep going! Small steps become big progress 🚀",
-
-"You completed checkpoints before, keep building your streak ⭐",
-
-"Stay focused on your goal. You can improve every day 💪",
-
-"Great work! Keep pushing forward 🏆"
+"Stay focused and keep learning 🧠"
 
 ];
 
 
-let random =
-messages[
-Math.floor(Math.random()*messages.length)
+let message =
+advice[
+Math.floor(Math.random()*advice.length)
 ];
 
 
 document.getElementById("aiText")
 .innerHTML =
-random;
+message;
 
 
 }
-
-
-</script>
-<div class="card">
-
-<h2>🩵 Special Colours</h2>
-
-<p>
-Baby Blue is available for a soft theme!
-</p>
-
-<button onclick="babyBlue()">
-🩵 Use Baby Blue
-</button>
-
-<button onclick="resetTheme()">
-🔄 Reset Theme
-</button>
-
-</div>
-
-
-
-<div class="card">
-
-<h2>📊 Plan Status</h2>
-
-<p id="status">
-Your journey has started!
-</p>
-
-</div>
-
-
-
-<script>
-
-
-function babyBlue(){
-
-document.body.style.background =
-"#89CFF0";
-
-document.body.style.color =
-"black";
-
-
-localStorage.setItem(
-"customColour",
-"#89CFF0"
-);
-
-
-}
-
-
-
-function resetTheme(){
-
-document.body.className = "";
-
-document.body.style.background =
-"#050505";
-
-document.body.style.color =
-"white";
-
-
-localStorage.removeItem(
-"customColour"
-);
-
-
-localStorage.removeItem(
-"theme"
-);
-
-
-}
-
-
-
-function updateStatus(){
-
-let status =
-document.getElementById("status");
-
-
-if(checkpoints == 0){
-
-status.innerHTML =
-"Start your first checkpoint! 🚀";
-
-}
-
-else if(checkpoints < 7){
-
-status.innerHTML =
-"Good progress! Keep going ⭐";
-
-}
-
-else if(checkpoints < 14){
-
-status.innerHTML =
-"More than halfway done! 🔥";
-
-}
-
-else{
-
-status.innerHTML =
-"🏆 7 Day Plan Complete!";
-
-}
-
-}
-
-
-updateStatus();
 
 
 
